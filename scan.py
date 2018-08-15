@@ -35,7 +35,16 @@ a = argparse.ArgumentParser()
 a.add_argument("-i", "--image", required=True,
                help="Path to the image to be scanned")
 args = a.parse_args()
-
+print(args.image)
 image = cv2.imread(args.image)
 orig = image.copy()
 image = resize(image, height=500)
+cv2.imshow("asd", image)
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+gray = cv2.GaussianBlur(gray, (5, 5), 1)
+edged = cv2.Canny(gray, 75, 200)
+
+cv2.imshow("asd", edged)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
