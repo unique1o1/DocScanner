@@ -96,20 +96,27 @@ cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 1)
 cv2.imshow("Outline", image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+print("STEP 3: Apply perspective transform")
+
 warped = transform(orig, screenCnt.reshape(4, 2) * ratio)
 warped = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
 
 warped = (warped > threshold_local(
     warped, 11, offset=10)).astype("uint8") * 255
-# show the original and scanned images
-F = fileName + "_scanned"+ext
-cv2.imwrite(f"{os.path.join(dirName, F)}", warped)
-print("STEP 3: Apply perspective transform")
+if warped.shape[0] < warped.shape[1]:
+    warped = cv2.rotate(warped, rotateCode=cv2.ROTATE_90_COUNTERCLOCKWISE)
 
+# show the original and scanned images
+print("OCR...")
 a = Image.fromarray(warped)
 text = pytesseract.image_to_string(a)
 with open('text.txt', "w") as f:
     f.write(text)
-cv2.imshow("Original", resize(orig, height=650))
-cv2.imshow("Scanned", resize(warped, height=650))
-cv2.waitKey(0)
+print("Saving..")
+
+F = fileName + "_scanned"+ext
+cv2.imwrite(f"{os.path.join(dirName, F)}", warped)
+
+# cv2.imshow("Original", resize(orig, height=650))
+# cv2.imshow("Scanned", resize(warped, height=650))
+# cv2.waitKey(0)
