@@ -41,14 +41,14 @@ F = fileName + "_scanned" + ext
 if args.pdf:
     images_list = []
     page_no = page_count(args.pdf)
-    if page_no > 33:
+    if page_no > 25:
         images = []
         prev_count = 1
         for i in myrange(page_no):
 
             images.extend(convert_from_path(
                 args.pdf, first_page=prev_count, last_page=i))
-            prev_count = i+1
+            prev_count = i + 1
     else:
         images = convert_from_path(args.pdf)
 

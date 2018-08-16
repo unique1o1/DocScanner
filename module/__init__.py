@@ -5,6 +5,7 @@ import cv2
 from module.transform import transform
 import pytesseract
 from PIL import Image
+import re
 
 
 def threshold_local(image, block_size, offset):
@@ -70,11 +71,13 @@ def process(image, ocr_bool):
     cnts = cv2.findContours(edged.copy(), cv2.RETR_LIST,
                             cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if is_cv2() else cnts[1]
-    cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:5]
+    cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[0:1]
 
     # loop over the contours
+    screenCnt = None
     for c in cnts:
         # approximate the contour
+
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.02 * peri, True)
 
@@ -82,22 +85,25 @@ def process(image, ocr_bool):
         # can assume that we have found our screen
         cv2.drawContours(image, [approx], -1, (0, 255, 0), 1)
         if len(approx) == 4:
+            x, y, w, h = cv2.boundingRect(approx)
+            percent = h / image.shape[0]*100
+            if percent > 50:
+                print("STEP 2: Found contours of paper")
+                screenCnt = approx
 
-            screenCnt = approx
-            break
-        else:
-            screenCnt = np.array([[[0, 0]],
-
-                                  [[image.shape[1], 0]],
-
-                                  [[image.shape[1], image.shape[0]]],
-
-                                  [[0, image.shape[0]]]])
-            break
     # show the contour (outline) of the piece of paper
-    print("STEP 2: Find contours of paper")
-    # cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
+    if screenCnt is None:
+        print("STEP 2: Found contours of paper")
 
+        screenCnt = np.array([[[0, 0]],
+
+                              [[image.shape[1], 0]],
+
+                              [[image.shape[1], image.shape[0]]],
+
+                              [[0, image.shape[0]]]])
+
+    # cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
     # cv2.imshow("Outline", image)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
