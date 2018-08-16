@@ -3,6 +3,7 @@ from skimage.filters import threshold_local
 import numpy as np
 import argparse
 import cv2
+from module.transform import
 
 
 def resize(image, width=None, height=None, inter=cv2.INTER_AREA):
@@ -59,7 +60,6 @@ cnts = cnts[0] if is_cv2() else cnts[1]
 cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:5]
 
 # loop over the contours
-print(cnts)
 for c in cnts:
     # approximate the contour
     peri = cv2.arcLength(c, True)
@@ -69,12 +69,15 @@ for c in cnts:
     # can assume that we have found our screen
 
     if len(approx) == 4:
+
+        print(cv2.boundingRect(approx))
         screenCnt = approx
         break
 
 # show the contour (outline) of the piece of paper
 print("STEP 2: Find contours of paper")
-cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
+cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 1)
 cv2.imshow("Outline", image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+warped = transform(orig, screenCnt.reshape(4, 2) * ratio)
