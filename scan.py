@@ -8,6 +8,15 @@ import sys
 from PIL import Image
 from module import ocr, process, threshold_local, resize, page_count
 
+
+def myrange(a):
+    for i in range(1, (a//20)+2):
+        if 20*i < a:
+            yield 20*i
+        else:
+            yield a
+
+
 # construct the argument parser and parse the arguments
 a = argparse.ArgumentParser()
 a.add_argument("-i", "--image",
@@ -30,10 +39,22 @@ ext = os.path.splitext(os.path.basename(args.image or args.pdf))[1]
 fileName = os.path.splitext(os.path.basename(args.image or args.pdf))[0]
 F = fileName + "_scanned" + ext
 if args.pdf:
-    images = convert_from_path(args.pdf)
     images_list = []
+    page_no = page_count(args.pdf)
+    if page_no > 33:
+        images = []
+        prev_count = 1
+        for i in myrange(page_no):
+
+            images.extend(convert_from_path(
+                args.pdf, first_page=prev_count, last_page=i))
+            prev_count = i+1
+    else:
+        images = convert_from_path(args.pdf)
+
     for img in images:
         images_list.append(Image.fromarray(process(np.array(img), args.ocr)))
+
     images_list[0].save(os.path.join(dirName, F), "PDF",
                         resolution=100.0, save_all=True, append_images=images_list[1:])
 else:
