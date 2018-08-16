@@ -16,7 +16,3 @@ A Document Scanner for adjusting Perspective and filtering images. Works with bo
 ## Optional
 Use -o flag to enable OCR
   
-  
-# Issue
-
-If image has a contour inside the document it gets selected and croped
