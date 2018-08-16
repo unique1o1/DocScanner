@@ -50,9 +50,11 @@ def is_cv2():
 a = argparse.ArgumentParser()
 a.add_argument("-i", "--image", required=True,
                help="Path to the image to be scanned")
+a.add_argument("-o", "--ocr", action='store_true',
+               help="Do OCR or not", default=False)
 
 args = a.parse_args()
-print(args.image)
+
 dirName = os.path.dirname(args.image)
 
 ext = os.path.splitext(os.path.basename(args.image))[1]
@@ -65,10 +67,10 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.GaussianBlur(gray, (5, 5), 0)
 edged = cv2.Canny(gray, 75, 200)
 print("STEP 1: Edge Detection")
-cv2.imshow("Image", gray)
-cv2.imshow("Edged", edged)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow("Image", gray)
+# cv2.imshow("Edged", edged)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 # find the contours in the edged image, keeping only the
 # largest ones, and initialize the screen contour
 cnts = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -86,16 +88,15 @@ for c in cnts:
 
     if len(approx) == 4:
 
-        print(cv2.boundingRect(approx))
         screenCnt = approx
         break
 
 # show the contour (outline) of the piece of paper
 print("STEP 2: Find contours of paper")
 cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 1)
-cv2.imshow("Outline", image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# cv2.imshow("Outline", image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
 print("STEP 3: Apply perspective transform")
 
 warped = transform(orig, screenCnt.reshape(4, 2) * ratio)
@@ -107,11 +108,12 @@ if warped.shape[0] < warped.shape[1]:
     warped = cv2.rotate(warped, rotateCode=cv2.ROTATE_90_COUNTERCLOCKWISE)
 
 # show the original and scanned images
-print("OCR...")
-a = Image.fromarray(warped)
-text = pytesseract.image_to_string(a)
-with open('text.txt', "w") as f:
-    f.write(text)
+if(args.ocr):
+    print("OCR...")
+    a = Image.fromarray(warped)
+    text = pytesseract.image_to_string(a)
+    with open('text.txt', "w") as f:
+        f.write(text)
 print("Saving..")
 
 F = fileName + "_scanned"+ext
