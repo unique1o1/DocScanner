@@ -6,6 +6,9 @@ import cv2
 from module.transform import transform
 import os
 
+import pytesseract
+from PIL import Image
+
 
 def threshold_local(image, block_size, offset):
     sigma = (block_size - 1) / 6.0
@@ -50,6 +53,10 @@ a.add_argument("-i", "--image", required=True,
 
 args = a.parse_args()
 print(args.image)
+dirName = os.path.dirname(args.image)
+
+ext = os.path.splitext(os.path.basename(args.image))[1]
+fileName = os.path.splitext(os.path.basename(args.image))[0]
 image = cv2.imread(args.image)
 orig = image.copy()
 ratio = image.shape[0] / 500
@@ -95,10 +102,14 @@ warped = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
 warped = (warped > threshold_local(
     warped, 11, offset=10)).astype("uint8") * 255
 # show the original and scanned images
-
+F = fileName + "_scanned"+ext
+cv2.imwrite(f"{os.path.join(dirName, F)}", warped)
 print("STEP 3: Apply perspective transform")
 
-
+a = Image.fromarray(warped)
+text = pytesseract.image_to_string(a)
+with open('text.txt', "w") as f:
+    f.write(text)
 cv2.imshow("Original", resize(orig, height=650))
 cv2.imshow("Scanned", resize(warped, height=650))
 cv2.waitKey(0)
