@@ -3,7 +3,14 @@ from skimage.filters import threshold_local
 import numpy as np
 import argparse
 import cv2
-from module.transform import
+from module.transform import transform
+import os
+
+
+def threshold_local(image, block_size, offset):
+    sigma = (block_size - 1) / 6.0
+    thresh_image = cv2.GaussianBlur(image, (0, 0), sigma)
+    return thresh_image - offset
 
 
 def resize(image, width=None, height=None, inter=cv2.INTER_AREA):
@@ -40,10 +47,12 @@ def is_cv2():
 a = argparse.ArgumentParser()
 a.add_argument("-i", "--image", required=True,
                help="Path to the image to be scanned")
+
 args = a.parse_args()
 print(args.image)
 image = cv2.imread(args.image)
 orig = image.copy()
+ratio = image.shape[0] / 500
 image = resize(image, height=500)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -81,3 +90,15 @@ cv2.imshow("Outline", image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 warped = transform(orig, screenCnt.reshape(4, 2) * ratio)
+warped = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
+
+warped = (warped > threshold_local(
+    warped, 11, offset=10)).astype("uint8") * 255
+# show the original and scanned images
+
+print("STEP 3: Apply perspective transform")
+
+
+cv2.imshow("Original", resize(orig, height=650))
+cv2.imshow("Scanned", resize(warped, height=650))
+cv2.waitKey(0)
