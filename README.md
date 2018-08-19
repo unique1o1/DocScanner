@@ -16,3 +16,6 @@ A Document Scanner for adjusting Perspective and filtering images. Works with bo
 ## Optional
 Use -o flag to enable OCR
   
+## Crontribute:
+
+Feel free to create an make a pull request if you have a idea in mind
