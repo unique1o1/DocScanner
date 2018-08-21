@@ -90,8 +90,6 @@ def process(image, ocr_bool):
             if percent > 50:
                 print("STEP 2: Found contours of paper")
                 screenCnt = approx
-
-    # show the contour (outline) of the piece of paper
     if screenCnt is None:
         print("STEP 2: Found contours of paper")
 
