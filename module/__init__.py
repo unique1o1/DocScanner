@@ -86,7 +86,7 @@ def process(image, ocr_bool):
         cv2.drawContours(image, [approx], -1, (0, 255, 0), 1)
         if len(approx) == 4:
             x, y, w, h = cv2.boundingRect(approx)
-            percent = h / image.shape[0]*100
+            percent = h / image.shape[0] * 100
             if percent > 50:
                 print("STEP 2: Found contours of paper")
                 screenCnt = approx
