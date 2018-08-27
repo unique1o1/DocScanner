@@ -13,10 +13,13 @@ class scan():
     def __init__(self, ocr_bool, dirname, filename):
         self.page = 1
         self.ocr_bool = ocr_bool
-        self.dirname = dirname
         self.filename = filename
         if(self.ocr_bool):
-            os.mkdir(os.path.join(dirname, 'ocr'))
+            self.dirname = os.path.join(dirname, 'ocr')
+            try:
+                os.mkdir(self.dirname)
+            except FileExistsError:
+                pass
 
     def threshold_local(self, image, block_size, offset):
         sigma = (block_size - 1) / 6.0
@@ -56,7 +59,8 @@ class scan():
             print("OCR...")
             a = Image.fromarray(img)
             text = pytesseract.image_to_string(a)
-            with open(os.join(self.path, "text.txt"), "w") as f:
+            with open(os.path.join(self.dirname, f"{self.filename}_{self.page}.txt"), "w") as f:
+                self.page = self.page + 1
                 f.write(text)
 
     def process(self, image):
@@ -124,7 +128,7 @@ class scan():
 
         # show the original and scanned images
 
-        self.ocr(warped, path)
+        self.ocr(warped)
         return warped
 
         # cv2.imshow("Original", resize(orig, height=650))

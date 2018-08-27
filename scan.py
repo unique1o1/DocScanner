@@ -6,7 +6,7 @@ import os
 from pdf2image import convert_from_path
 import sys
 from PIL import Image
-from module import ocr, process, threshold_local, resize, page_count
+from module import scan
 
 
 def myrange(a):
@@ -38,9 +38,10 @@ dirName = os.path.dirname(args.image or args.pdf)
 ext = os.path.splitext(os.path.basename(args.image or args.pdf))[1]
 fileName = os.path.splitext(os.path.basename(args.image or args.pdf))[0]
 F = fileName + "_scanned" + ext
+mod = scan(args.ocr, dirName, fileName)
 if args.pdf:
     images_list = []
-    page_no = page_count(args.pdf)
+    page_no = mod.page_count(args.pdf)
     if page_no > 25:
         images = []
         prev_count = 1
@@ -53,11 +54,12 @@ if args.pdf:
         images = convert_from_path(args.pdf)
 
     for img in images:
-        images_list.append(Image.fromarray(process(np.array(img), args.ocr)))
+        images_list.append(Image.fromarray(
+            mod.process(np.array(img))))
 
     images_list[0].save(os.path.join(dirName, F), "PDF",
                         resolution=100.0, save_all=True, append_images=images_list[1:])
 else:
-    img = process(cv2.imread(args.image), args.ocr)
+    img = mod.process(cv2.imread(args.image))
     print("Saving..")
     cv2.imwrite(f"{os.path.join(dirName, F)}", img)
