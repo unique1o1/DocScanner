@@ -18,4 +18,4 @@ Use -o flag to enable OCR
   
 ## Crontribute:
 
-Feel free to create an make a pull request if you have a idea in mind
+Feel free to create a pull request.
