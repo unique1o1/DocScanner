@@ -18,4 +18,4 @@ Use -o flag to enable OCR
   
 ## Crontribute:
 
-Feel free to create a pull request.
+Feel free to create a pull request or an [Issue](https://github.com/unique1o1/DocScanner/issues).
