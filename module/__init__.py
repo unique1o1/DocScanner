@@ -81,7 +81,7 @@ class scan():
         cnts = cv2.findContours(edged.copy(), cv2.RETR_LIST,
                                 cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if self.is_cv2() else cnts[1]
-        cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[0:1]
+        cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:1]
 
         # loop over the contours
         screenCnt = None
