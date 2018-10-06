@@ -131,10 +131,6 @@ class scan():
         self.ocr(warped)
         return warped
 
-        # cv2.imshow("Original", resize(orig, height=650))
-        # cv2.imshow("Scanned", resize(warped, height=650))
-        # cv2.waitKey(0)
-
     def page_count(self, pdf_path, userpw=None):
         if userpw is not None:
             proc = Popen(["pdfinfo", pdf_path, '-upw', userpw],
