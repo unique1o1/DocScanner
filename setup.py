@@ -1,5 +1,6 @@
 import setuptools
 import os
+import sys
 from setuptools.command.install import install
 
 from setuptools.command.develop import develop
@@ -31,8 +32,13 @@ class CustomDevelopCommand(develop):
 
 
 def custom_command():
-    os.system('sudo apt-get install tesseract-ocr')
-    print("Installing tessaract")
+    if sys.platform == 'darwin':
+        os.system("brew install tesseract")
+    elif sys.platform == 'linux':
+        os.system('sudo apt-get install tesseract-ocr')
+    else:
+        print("Do install tesseract for your system")
+    print("Installed tessaract")
 
 
 def parse_requirements(requirements):
