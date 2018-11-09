@@ -2,7 +2,7 @@ import setuptools
 import os
 import sys
 from setuptools.command.install import install
-
+import subprocess as sp
 from setuptools.command.develop import develop
 from setuptools.command.egg_info import egg_info
 
@@ -33,12 +33,15 @@ class CustomDevelopCommand(develop):
 
 def custom_command():
     if sys.platform == 'darwin':
-        os.system("brew install tesseract")
+         print("Installing tessaract")
+         process = sp.Popen(['brew','install','tesseract'], stdout=sp.PIPE)
+         for c in iter(lambda: process.stdout.read(1), b''): 
+             sys.stdout.write(c)
+        
     elif sys.platform == 'linux':
         os.system('sudo apt-get install tesseract-ocr')
     else:
         print("Do install tesseract for your system")
-    print("Installed tessaract")
 
 
 def parse_requirements(requirements):
