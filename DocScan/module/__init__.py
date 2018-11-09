@@ -2,7 +2,7 @@ from subprocess import Popen, PIPE
 
 import numpy as np
 import cv2
-from module.transform import transform
+from DocScan.module.transform import transform
 import pytesseract
 from PIL import Image
 import re
